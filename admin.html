@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị – Thống kê Báo cáo CTH-DLXH</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+<style>
+:root {
+  --navy:     #0b1e3d;
+  --navy2:    #102a52;
+  --blue:     #1565c0;
+  --blue2:    #1976d2;
+  --sky:      #0ea5e9;
+  --cyan:     #00bcd4;
+  --gold:     #f59e0b;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --orange:   #f97316;
+  --bg:       #f0f5fb;
+  --card:     #ffffff;
+  --border:   #d1ddf0;
+  --text1:    #0b1e3d;
+  --text2:    #3d5a85;
+  --text3:    #7a94b8;
+  --shadow:   0 4px 24px rgba(11,30,61,0.10);
+  --shadow2:  0 2px 8px  rgba(11,30,61,0.07);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: var(--text1);
+  font-size: 14px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 0% 0%,    rgba(21,101,192,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(14,165,233,.10) 0%, transparent 60%),
+    var(--bg);
+  pointer-events: none;
+}
+
+/* LOGIN */
+#loginOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 20% 30%,  rgba(21,101,192,.30), transparent 50%),
+    radial-gradient(circle at 80% 70%,  rgba(14,165,233,.20), transparent 50%),
+    linear-gradient(160deg, #0b1e3d 0%, #102a52 50%, #0b2a4a 100%);
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 24px;
+  padding: 40px 32px 36px;
+  text-align: center;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 24px 80px rgba(0,0,0,.40);
+  animation: popIn .35s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(.9) translateY(16px); opacity: 0; }
+  to   { transform: scale(1)  translateY(0);    opacity: 1; }
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.login-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 32px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.input-group input {
+  width: 100%;
+  height: 52px;
+  background: rgba(255,255,255,.10);
+  border: 1.5px solid rgba(255,255,255,.20);
+  border-radius: 14px;
+  padding: 0 48px 0 18px;
+  font-size: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.input-group input::placeholder { color: rgba(255,255,255,.35); font-family: 'Be Vietnam Pro', sans-serif; font-weight: 400; font-size: 14px; }
+.input-group input:focus {
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(14,165,233,.25);
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: rgba(255,255,255,.4);
+  cursor: pointer; font-size: 17px;
+  padding: 0; min-width: auto;
+}
+.toggle-pw:hover { color: rgba(255,255,255,.8); }
+
+#loginError {
+  display: none;
+  background: rgba(239,68,68,.15);
+  border: 1px solid rgba(239,68,68,.4);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #fca5a5;
+  margin-bottom: 16px;
+}
+
+#loginBtn {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, var(--sky), var(--blue));
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(14,165,233,.35);
+  transition: transform .2s, box-shadow .2s;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+#loginBtn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,165,233,.45); }
+#loginBtn:active { transform: scale(.98); }
+
+/* APP */
+#app { display: none; position: relative; z-index: 1; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--navy);
+  padding: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(11,30,61,.25);
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.sidebar-logo .badge {
+  display: inline-block;
+  background: var(--gold);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.sidebar-logo h1 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.sidebar-logo p {
+  font-size: 10px;
+  color: rgba(255,255,255,.4);
+  margin-top: 3px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  padding: 0 8px;
+  margin: 16px 0 8px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255,255,255,.6);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all .2s;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  margin-bottom: 2px;
+}
+
+.nav-btn:hover { background: rgba(255,255,255,.08); color: #fff; }
+.nav-btn.active { background: rgba(14,165,233,.2); color: var(--sky); font-weight: 700; }
+.nav-btn .icon { font-size: 16px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* MAIN */
+.main {
+  margin-left: 240px;
+  padding: 28px 28px 40px;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow2);
+  padding: 20px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.topbar-title h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.topbar-title p {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.period-select {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.period-select select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 600;
+  color: var(--text1);
+  background: var(--card);
+  cursor: pointer;
+  outline: none;
+  transition: border-color .2s;
+}
+.period-select select:focus { border-color: var(--sky); }
+
+.btn-load {
+  height: 38px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, var(--sky), var(--blue));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 3px 12px rgba(14,165,233,.3);
+}
+.btn-load:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(14,165,233,.4); }
+.btn-load:disabled { opacity: .6; transform: none; cursor: wait; }
+
+.btn-export-top {
+  height: 38px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform .15s, box-shadow .15s;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+.export-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.btn-export-top:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(249,115,22,.4); }
+.btn-export-top:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* STAT CARDS */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow2);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+.stat-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.stat-card.total  .stat-icon-wrap { background: rgba(21,101,192,.10); }
+.stat-card.sent   .stat-icon-wrap { background: rgba(34,197,94,.12); }
+.stat-card.pending .stat-icon-wrap { background: rgba(249,115,22,.10); }
+.stat-card.pct    .stat-icon-wrap { background: rgba(0,188,212,.10); }
+
+.stat-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.stat-val {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+.stat-card.total   .stat-val { color: var(--blue); }
+.stat-card.sent    .stat-val { color: var(--green); }
+.stat-card.pending .stat-val { color: var(--orange); }
+.stat-card.pct     .stat-val { color: var(--cyan); }
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 700;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* PROGRESS BAR */
+.progress-section {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow2);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.progress-header h3 { font-size: 13px; font-weight: 700; color: var(--text2); white-space: nowrap; }
+.progress-pct {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sky);
+  min-width: 48px;
+  text-align: right;
+}
+
+.progress-bar-wrap {
+  flex: 1;
+  background: #e9eef8;
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sky), var(--green));
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* TABLE */
+.table-wrap {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow2);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.table-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text1);
+}
+
+.count-badge {
+  background: #eef3ff;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.btn-export {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border: none;
+  border-radius: 10px;
+  padding: 6px 16px;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform .15s, box-shadow .15s;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+.btn-export:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(249,115,22,.4); }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+.data-table thead th {
+  background: #f7f9fd;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.data-table th:nth-child(1), .data-table td:nth-child(1) { width: 55px; min-width: 55px; text-align: center; }
+.data-table th:nth-child(2), .data-table td:nth-child(2) { width: auto; min-width: 180px; }
+.data-table th:nth-child(3), .data-table td:nth-child(3) { width: 110px; min-width: 110px; }
+.data-table th:nth-child(4), .data-table td:nth-child(4) { width: 220px; min-width: 220px; }
+
+.data-table tbody tr {
+  border-bottom: 1px solid #eef1f8;
+  transition: background .15s;
+}
+
+.data-table tbody tr:hover { background: #f7f9fd; }
+.data-table tbody tr:last-child { border-bottom: none; }
+
+.data-table tbody td {
+  padding: 11px 12px;
+  font-size: 13px;
+  color: var(--text1);
+  vertical-align: middle;
+}
+
+.td-stt { color: var(--text3); font-weight: 700; font-size: 12px; text-align: center; }
+.td-name { font-weight: 600; }
+
+.badge-sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badge-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.td-time { 
+  font-size: 12px; 
+  color: var(--text3); 
+  font-family: 'JetBrains Mono', monospace;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.td-link { text-align: center; }
+.btn-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e0f2fe;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s, transform .15s;
+}
+.btn-view-link:hover { background: #bae6fd; transform: translateY(-1px); }
+.no-link { color: var(--text3); font-size: 12px; }
+
+.loading-row td {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text3);
+}
+
+.spinner {
+  display: inline-block;
+  width: 28px; height: 28px;
+  border: 3px solid #e9eef8;
+  border-top-color: var(--sky);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast-wrap {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 280px;
+  background: var(--navy);
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 13px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.30);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideUp .3s ease;
+  border-left: 4px solid var(--sky);
+}
+
+.toast.error { border-left-color: var(--red); }
+.toast.success { border-left-color: var(--green); }
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.section-title {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.search-wrap {
+  position: relative;
+  margin-bottom: 16px;
+  max-width: 380px;
+}
+
+.search-wrap input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 38px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: var(--text1);
+  background: var(--card);
+  outline: none;
+  transition: border-color .2s;
+}
+.search-wrap input:focus { border-color: var(--sky); }
+.search-wrap .search-icon {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 15px;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { width: 0; overflow: hidden; }
+  .main { margin-left: 0; padding: 16px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .progress-section { flex-wrap: wrap; }
+}
+
+.floating-back-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 85px;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11,30,61,0.7);
+  backdrop-filter: blur(12px);
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  z-index: 999999;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s;
+}
+.floating-back-btn:hover {
+  background: rgba(11,30,61,0.9);
+}
+.floating-back-btn:active {
+  transform: scale(0.92);
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-title">🔐 Quản trị<br>Thống kê Báo cáo</div>
+    <div class="login-sub">Hội LHPN Phường Thanh Khê • Đà Nẵng</div>
+    <div class="input-group">
+      <input type="password" id="loginPw" placeholder="Nhập mật khẩu quản trị..." autocomplete="off">
+      <button class="toggle-pw" onclick="togglePw()" type="button">👁️</button>
+    </div>
+    <div id="loginError"></div>
+    <button id="loginBtn" onclick="doLogin()">🚀 Đăng nhập</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="badge">ADMIN</div>
+      <h1>Quản trị Báo cáo<br>CTH-DLXH</h1>
+      <p>Phường Thanh Khê • Đà Nẵng</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Chức năng</div>
+      <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">
+        <span class="icon">📊</span> Tổng quan
+      </button>
+      <button class="nav-btn" onclick="showView('sent')" id="nav-sent">
+        <span class="icon">✅</span> Đã gửi báo cáo
+      </button>
+      <button class="nav-btn" onclick="showView('pending')" id="nav-pending">
+        <span class="icon">⏳</span> Chưa gửi
+      </button>
+      <button class="nav-btn" onclick="showView('all')" id="nav-all">
+        <span class="icon">📋</span> Tất cả chi hội
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      Hệ thống báo cáo<br>nội bộ Hội LHPN
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">
+        <h2 id="viewTitle">📊 Tổng quan thống kê</h2>
+        <p id="viewSub">Chọn tháng/năm và tải dữ liệu từ Google Sheet</p>
+      </div>
+      <div style="width:40px;height:2px;background:linear-gradient(90deg,var(--sky),var(--blue));border-radius:99px;"></div>
+      <div class="topbar-right">
+        <div class="period-select">
+          <select id="selThang"></select>
+          <select id="selNam"></select>
+          <button class="btn-load" id="btnLoad" onclick="loadData()">
+            🔄 Tải dữ liệu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="export-center">
+      <button class="btn-export-top" id="btnExportTop" onclick="exportAllToDocx()">
+        📄 Xuất danh sách toàn bộ
+      </button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="view-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card total"><div class="stat-icon-wrap">📋</div><div class="stat-body"><div class="stat-val" id="s-total">—</div><div class="stat-label">Tổng chi hội</div></div></div>
+        <div class="stat-card sent"><div class="stat-icon-wrap">✅</div><div class="stat-body"><div class="stat-val" id="s-sent">—</div><div class="stat-label">Đã gửi</div></div></div>
+        <div class="stat-card pending"><div class="stat-icon-wrap">⏳</div><div class="stat-body"><div class="stat-val" id="s-pending">—</div><div class="stat-label">Chưa gửi</div></div></div>
+        <div class="stat-card pct"><div class="stat-icon-wrap">📈</div><div class="stat-body"><div class="stat-val" id="s-pct">—</div><div class="stat-label">Hoàn thành</div></div></div>
+      </div>
+      <div class="progress-section">
+        <div class="progress-header"><h3>📊 Tiến độ nộp báo cáo</h3></div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progBar"></div></div>
+        <span class="progress-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="section-title">Danh sách toàn bộ chi hội</div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Danh sách chi hội</h3><span class="count-badge" id="dash-pending-count">—</span></div>
+        <table class="data-table"><thead><tr><th>STT</th><th>Chi hội</th><th>Trạng thái</th><th>Thời gian gửi</th><th>Báo cáo</th></tr></thead><tbody id="dashPendingBody"><tr class="loading-row"><td colspan="5">Hãy chọn tháng/năm và bấm Tải dữ liệu</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- SENT -->
+    <div id="view-sent" style="display:none;">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchSent" placeholder="Tìm chi hội đã gửi..." oninput="filterTable('sent')"></div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Chi hội đã gửi báo cáo</h3><span class="count-badge" id="sent-count">—</span></div>
+        <table class="data-table"><thead><tr><th>STT</th><th>Chi hội</th><th>Trạng thái</th><th>Thời gian gửi</th><th>Báo cáo</th></tr></thead><tbody id="sentBody"><tr class="loading-row"><td colspan="5">Hãy tải dữ liệu trước</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- PENDING -->
+    <div id="view-pending" style="display:none;">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchPending" placeholder="Tìm chi hội chưa gửi..." oninput="filterTable('pending')"></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Chi hội chưa gửi báo cáo</h3>
+          <div style="display: flex; gap: 12px;">
+            <span class="count-badge" id="pending-count">—</span>
+            <button class="btn-export" onclick="exportAllToDocx()">📄 Xuất danh sách DOCX</button>
+          </div>
+        </div>
+        <table class="data-table"><thead><tr><th>STT</th><th>Chi hội</th><th>Trạng thái</th></tr></thead><tbody id="pendingBody"><tr class="loading-row"><td colspan="3">Hãy tải dữ liệu trước</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- ALL -->
+    <div id="view-all" style="display:none;">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchAll" placeholder="Tìm chi hội..." oninput="filterTable('all')"></div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Tất cả chi hội</h3><span class="count-badge" id="all-count">—</span></div>
+        <table class="data-table"><thead><tr><th>STT</th><th>Chi hội</th><th>Trạng thái</th><th>Thời gian gửi</th><th>Báo cáo</th></tr></thead><tbody id="allBody"><tr class="loading-row"><td colspan="5">Hãy tải dữ liệu trước</td></tr></tbody></table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ==================== CẤU HÌNH ====================
+// Mật khẩu KHÔNG nằm trong code: được kiểm tra trên server (biến ADMIN_PASSWORD của Cloudflare).
+let adminPw = "";
+let state = { loaded: false, thang: null, nam: null, rows: [] };
+
+// Helper
+function toast(msg, type = "info") {
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  const icons = { info: "ℹ️", error: "❌", success: "✅" };
+  el.innerHTML = `<span>${icons[type] || "ℹ️"}</span><span>${msg}</span>`;
+  document.getElementById("toastWrap").appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// Login
+function togglePw() { const inp = document.getElementById("loginPw"); inp.type = inp.type === "password" ? "text" : "password"; }
+document.getElementById("loginPw").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+async function doLogin() {
+  const pw = document.getElementById("loginPw").value.trim();
+  const err = document.getElementById("loginError");
+  const btn = document.getElementById("loginBtn");
+  const showErr = (msg) => { err.style.display="block"; err.textContent=msg; setTimeout(()=>err.style.display="none",3000); };
+  if (!pw) { showErr("Vui lòng nhập mật khẩu"); return; }
+  const oldText = btn.textContent;
+  btn.disabled = true; btn.textContent = "⏳ Đang kiểm tra...";
+  try {
+    const res = await fetch("/api/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "login", password: pw })
+    });
+    const json = await res.json();
+    if (!json.success) { showErr("❌ " + (json.error || "Sai mật khẩu.")); return; }
+    adminPw = pw;
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    initApp();
+  } catch (e) {
+    showErr("Lỗi kết nối: " + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = oldText;
+  }
+}
+
+function initApp() {
+  const selT = document.getElementById("selThang");
+  const selY = document.getElementById("selNam");
+  for (let m = 1; m <= 12; m++) { 
+    let o = document.createElement("option"); 
+    o.value = m; 
+    o.textContent = `Tháng ${m}`; 
+    selT.appendChild(o); 
+  }
+  const y = new Date().getFullYear();
+  for (let yr = y; yr >= y-2; yr--) { 
+    let o = document.createElement("option"); 
+    o.value = yr; 
+    o.textContent = yr; 
+    selY.appendChild(o); 
+  }
+  
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const currentDay = now.getDate();
+  
+  let defaultMonth, defaultYear;
+  
+  if (currentDay <= 20) {
+    if (currentMonth === 1) {
+      defaultMonth = 12;
+      defaultYear = currentYear - 1;
+    } else {
+      defaultMonth = currentMonth - 1;
+      defaultYear = currentYear;
+    }
+  } else {
+    defaultMonth = currentMonth;
+    defaultYear = currentYear;
+  }
+  
+  selT.value = defaultMonth;
+  selY.value = defaultYear;
+  
+  // Tự động tải dữ liệu khi vào trang
+  setTimeout(() => loadData(), 300);
+}
+
+const VIEWS = ["dashboard","sent","pending","all"];
+const TITLES = {
+  dashboard: ["📊 Tổng quan thống kê", "Xem tổng quan tình hình nộp báo cáo"],
+  sent: ["✅ Chi hội đã gửi báo cáo", "Danh sách chi hội đã gửi"],
+  pending: ["⏳ Chi hội chưa gửi báo cáo", "Danh sách chi hội còn thiếu báo cáo"],
+  all: ["📋 Tất cả chi hội", "Trạng thái toàn bộ danh sách chi hội"],
+};
+function showView(view) {
+  VIEWS.forEach(v => {
+    document.getElementById(`view-${v}`).style.display = v === view ? "block" : "none";
+    document.getElementById(`nav-${v}`).classList.toggle("active", v === view);
+  });
+  const [title, sub] = TITLES[view];
+  document.getElementById("viewTitle").textContent = title;
+  document.getElementById("viewSub").textContent = sub;
+}
+
+// Load data qua proxy (giống index)
+async function loadData() {
+  const thang = document.getElementById("selThang").value;
+  const nam = document.getElementById("selNam").value;
+  const btn = document.getElementById("btnLoad");
+  btn.disabled = true; btn.textContent = "⏳ Đang tải...";
+  setLoadingAll();
+  try {
+    const res = await fetch("/api/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getStats", thang, nam, password: adminPw })
+    });
+    const json = await res.json();
+    if (!json.success) { 
+      toast(json.error || "Không lấy được dữ liệu", "error"); 
+      setErrorAll(json.error); 
+      return; 
+    }
+    state.rows = json.rows || [];
+    state.thang = thang; state.nam = nam; state.loaded = true;
+    renderAll();
+    toast(`Đã tải ${json.total} chi hội · Tháng ${thang}/${nam}`, "success");
+  } catch(err) { 
+    toast("Lỗi kết nối: " + err.message, "error"); 
+    setErrorAll(err.message); 
+  }
+  finally { btn.disabled = false; btn.textContent = "🔄 Tải dữ liệu"; }
+}
+
+// Render nút xem báo cáo (dựa vào fileUrl trả về từ Apps Script)
+function renderLinkCell(r) {
+  if (r.fileUrl) {
+    return `<td class="td-link"><a class="btn-view-link" href="${r.fileUrl}" target="_blank" rel="noopener">📄 Xem</a></td>`;
+  }
+  return `<td class="td-link"><span class="no-link">—</span></td>`;
+}
+
+// Chuyển mm/dd/yyyy HH:MM:SS → dd/mm/yyyy HH:MM:SS
+function fmtThoiGian(str) {
+  if (!str || str === "—") return str || "—";
+  const m = str.match(/^(\d{2})\/(\d{2})\/(\d{4})(\s.+)?$/);
+  if (!m) return str;
+  return m[2] + "/" + m[1] + "/" + m[3] + (m[4] || "");
+}
+
+function renderAll() {
+  const rows = state.rows;
+  const sent = rows.filter(r => r.status && r.status.includes("Đã gửi"));
+  const pending = rows.filter(r => !r.status || !r.status.includes("Đã gửi"));
+  const total = rows.length, pct = total ? Math.round(sent.length / total * 100) : 0;
+  document.getElementById("s-total").textContent = total;
+  document.getElementById("s-sent").textContent = sent.length;
+  document.getElementById("s-pending").textContent = pending.length;
+  document.getElementById("s-pct").textContent = pct + "%";
+  document.getElementById("prog-pct").textContent = pct + "%";
+  setTimeout(() => document.getElementById("progBar").style.width = pct + "%", 100);
+  document.getElementById("dash-pending-count").textContent = rows.length;
+  document.getElementById("dashPendingBody").innerHTML = rows.length === 0 ?
+    `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Không có dữ liệu</td></tr>` :
+    rows.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td>${r.status && r.status.includes("Đã gửi") ? '<span class="badge-sent">✅ Đã gửi</span>' : '<span class="badge-pending">⏳ Chưa gửi</span>'}</td><td class="td-time">${fmtThoiGian(r.thoiGian)}</td>${renderLinkCell(r)}</tr>`).join("");
+  document.getElementById("sent-count").textContent = sent.length;
+  document.getElementById("sentBody").innerHTML = sent.length===0 ? emptyHtml("Chưa có chi hội nào gửi báo cáo") :
+    sent.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td><span class="badge-sent">✅ Đã gửi</span></td><td class="td-time">${fmtThoiGian(r.thoiGian)}</td>${renderLinkCell(r)}</tr>`).join("");
+  document.getElementById("pending-count").textContent = pending.length;
+  renderPendingTable(pending);
+  document.getElementById("all-count").textContent = rows.length;
+  document.getElementById("allBody").innerHTML = rows.length===0 ? emptyHtml("Không có dữ liệu") :
+    rows.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td>${r.status && r.status.includes("Đã gửi") ? '<span class="badge-sent">✅ Đã gửi</span>' : '<span class="badge-pending">⏳ Chưa gửi</span>'}</td><td class="td-time">${fmtThoiGian(r.thoiGian)}</td>${renderLinkCell(r)}</tr>`).join("");
+}
+function renderPendingTable(data) {
+  const tbody = document.getElementById("pendingBody");
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--green);font-weight:700">🎉 Tất cả đã gửi!</td></tr>`; return; }
+  tbody.innerHTML = data.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td><span class="badge-pending">⏳ Chưa gửi</span></td></tr>`).join("");
+}
+function emptyHtml(msg) { return `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">${msg}</td></tr>`; }
+
+// Filter
+function filterTable(view) {
+  if (!state.loaded) return;
+  const q = document.getElementById(`search${view.charAt(0).toUpperCase()+view.slice(1)}`).value.trim().toLowerCase();
+  if(view==="sent"){ const d = state.rows.filter(r=>r.status && r.status.includes("Đã gửi") && (r.chiHoi||'').toLowerCase().includes(q)); document.getElementById("sent-count").textContent=d.length; document.getElementById("sentBody").innerHTML = d.length? d.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td><span class="badge-sent">✅ Đã gửi</span></td><td class="td-time">${fmtThoiGian(r.thoiGian)}</td>${renderLinkCell(r)}</tr>`).join("") : emptyHtml("Không tìm thấy"); }
+  else if(view==="pending"){ const d = state.rows.filter(r=>!r.status || !r.status.includes("Đã gửi") && (r.chiHoi||'').toLowerCase().includes(q)); document.getElementById("pending-count").textContent=d.length; renderPendingTable(d); }
+  else if(view==="all"){ const d = state.rows.filter(r=>(r.chiHoi||'').toLowerCase().includes(q)); document.getElementById("all-count").textContent=d.length; document.getElementById("allBody").innerHTML = d.length? d.map((r,i)=>`<tr><td class="td-stt">${i+1}</td><td class="td-name">${r.chiHoi || ''}</td><td>${r.status && r.status.includes("Đã gửi")? '<span class="badge-sent">✅ Đã gửi</span>' : '<span class="badge-pending">⏳ Chưa gửi</span>'}</td><td class="td-time">${fmtThoiGian(r.thoiGian)}</td>${renderLinkCell(r)}</tr>`).join("") : emptyHtml("Không tìm thấy"); }
+}
+function setLoadingAll() { const sp5 = `<tr class="loading-row"><td colspan="5"><div class="spinner"></div><br>Đang tải...</td></tr>`; const sp3 = `<tr class="loading-row"><td colspan="3"><div class="spinner"></div><br>Đang tải...</td></tr>`; ["dashPendingBody","sentBody","allBody"].forEach(id=>{let el=document.getElementById(id); if(el) el.innerHTML=sp5;}); const pb=document.getElementById("pendingBody"); if(pb) pb.innerHTML=sp3; }
+function setErrorAll(msg) { const html5 = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--red)">❌ Lỗi: ${msg}</td></tr>`; const html3 = `<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--red)">❌ Lỗi: ${msg}</td></tr>`; ["dashPendingBody","sentBody","allBody"].forEach(id=>{let el=document.getElementById(id); if(el) el.innerHTML=html5;}); const pb=document.getElementById("pendingBody"); if(pb) pb.innerHTML=html3; }
+
+// ==================== XUẤT DOCX ====================
+async function exportAllToDocx() {
+  if (!state.loaded || !state.rows.length) { toast("Chưa có dữ liệu, hãy tải báo cáo trước!", "error"); return; }
+  const docxLib = window.docx;
+  if (!docxLib) { toast("Thư viện DOCX chưa được tải!", "error"); return; }
+
+  const allRows = state.rows;
+  const sentCount = allRows.filter(r => r.status && r.status.includes("Đã gửi")).length;
+  const pendingCount = allRows.filter(r => !r.status || !r.status.includes("Đã gửi")).length;
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, ShadingType, PageOrientation } = docxLib;
+
+  const colW = [576, 5414, 3226, 2304];
+  const makeCell = (children, bg, width, align = AlignmentType.LEFT) => new TableCell({ 
+    children: [new Paragraph({ children, alignment: align })], 
+    shading: { fill: bg, type: ShadingType.CLEAR }, 
+    width: { size: width, type: WidthType.DXA }, 
+    margins: { top: 60, bottom: 60, left: 100, right: 100 } 
+  });
+  
+  const headerRow = new TableRow({ 
+    tableHeader: true, 
+    children: [ 
+      makeCell([new TextRun({ text: "STT", bold: true, size: 22, font: "Times New Roman", color: "FFFFFF" })], "1F4E79", colW[0], AlignmentType.CENTER),
+      makeCell([new TextRun({ text: "TÊN CHI HỘI", bold: true, size: 22, font: "Times New Roman", color: "FFFFFF" })], "1F4E79", colW[1], AlignmentType.CENTER),
+      makeCell([new TextRun({ text: "TRẠNG THÁI / NGÀY GỬI", bold: true, size: 22, font: "Times New Roman", color: "FFFFFF" })], "1F4E79", colW[2], AlignmentType.CENTER),
+      makeCell([new TextRun({ text: "GHI CHÚ", bold: true, size: 22, font: "Times New Roman", color: "FFFFFF" })], "1F4E79", colW[3], AlignmentType.CENTER)
+    ] 
+  });
+  
+  const dataRows = allRows.map((item, idx) => { 
+    const isSent = item.status && item.status.includes("Đã gửi"); 
+    const rowBg = idx%2===0 ? "FFFFFF" : "F0F4FA"; 
+    const statusText = isSent ? (fmtThoiGian(item.thoiGian) || "Đã gửi") : "Chưa gửi"; 
+    const statusColor = isSent ? "1B6B2F" : "C0392B"; 
+    return new TableRow({ 
+      children: [ 
+        makeCell([new TextRun({ text: (idx+1).toString(), size: 20, font: "Times New Roman" })], rowBg, colW[0], AlignmentType.CENTER),
+        makeCell([new TextRun({ text: item.chiHoi || '', size: 20, font: "Times New Roman" })], rowBg, colW[1], AlignmentType.LEFT),
+        makeCell([new TextRun({ text: statusText, bold: !isSent, size: 20, font: "Times New Roman", color: statusColor })], rowBg, colW[2], AlignmentType.CENTER),
+        makeCell([new TextRun({ text: "", size: 20, font: "Times New Roman" })], rowBg, colW[3], AlignmentType.LEFT)
+      ] 
+    }); 
+  });
+  
+  const table = new Table({ 
+    rows: [headerRow, ...dataRows], 
+    width: { size: 11520, type: WidthType.DXA }, 
+    borders: { 
+      top: { style: BorderStyle.SINGLE, size: 4, color: "C0C0C0" }, 
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: "C0C0C0" }, 
+      left: { style: BorderStyle.SINGLE, size: 4, color: "C0C0C0" }, 
+      right: { style: BorderStyle.SINGLE, size: 4, color: "C0C0C0" }, 
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: "D8D8D8" }, 
+      insideVertical: { style: BorderStyle.SINGLE, size: 2, color: "D8D8D8" } 
+    } 
+  });
+  
+  const doc = new Document({ 
+    sections: [{ 
+      properties: { 
+        page: { 
+          margin: { top: 720, right: 720, bottom: 720, left: 720 }, 
+          size: { orientation: PageOrientation.PORTRAIT } 
+        } 
+      }, 
+      children: [ 
+        new Paragraph({ 
+          children: [new TextRun({ text: "HỘI LIÊN HIỆP PHỤ NỮ PHƯỜNG THANH KHÊ", bold: true, size: 26, font: "Times New Roman" })], 
+          alignment: AlignmentType.CENTER, 
+          spacing: { after: 60 } 
+        }),
+        new Paragraph({ 
+          children: [new TextRun({ text: "BÁO CÁO THỐNG KÊ TÌNH HÌNH NỘP BÁO CÁO CTH-DLXH", bold: true, size: 28, font: "Times New Roman" })], 
+          alignment: AlignmentType.CENTER, 
+          spacing: { after: 120 } 
+        }),
+        new Paragraph({ 
+          children: [new TextRun({ text: `Tháng ${state.thang} / ${state.nam}  —  Tổng: ${allRows.length} chi hội  |  Đã gửi: ${sentCount}  |  Chưa gửi: ${pendingCount}`, bold: true, size: 22, font: "Times New Roman", color: "1F4E79" })], 
+          alignment: AlignmentType.CENTER, 
+          spacing: { after: 280 } 
+        }),
+        table,
+        new Paragraph({ 
+          children: [new TextRun({ text: `Đà Nẵng, ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}`, size: 20, color: "666666", font: "Times New Roman" })], 
+          spacing: { before: 200 }, 
+          alignment: AlignmentType.RIGHT 
+        })
+      ] 
+    }] 
+  });
+  
+  try { 
+    const blob = await Packer.toBlob(doc); 
+    const link = document.createElement("a"); 
+    const url = URL.createObjectURL(blob); 
+    link.href = url; 
+    link.download = `Thong_ke_toan_bo_T${state.thang}_${state.nam}.docx`; 
+    document.body.appendChild(link); 
+    link.click(); 
+    document.body.removeChild(link); 
+    URL.revokeObjectURL(url); 
+    toast(`Đã xuất ${allRows.length} chi hội tháng ${state.thang}/${state.nam}!`, "success"); 
+  } catch(e) { 
+    toast("Lỗi khi tạo file DOCX: " + e.message, "error"); 
+  }
+}
+</script>
+
+<div class="floating-back-btn" id="backBtn">↩️</div>
+
+<script>
+(function () {
+  const btn = document.getElementById("backBtn");
+  const THRESHOLD = 10;
+  let isDragging = false, isTouchOnBtn = false;
+  let startTX = 0, startTY = 0, startBX = 0, startBY = 0;
+
+  btn.addEventListener("touchstart", function (e) {
+    isTouchOnBtn = true;
+    isDragging = false;
+    const touch = e.touches[0];
+    startTX = touch.clientX;
+    startTY = touch.clientY;
+    const r = btn.getBoundingClientRect();
+    startBX = r.left; startBY = r.top;
+    btn.style.left = startBX + "px";
+    btn.style.top  = startBY + "px";
+    btn.style.right = btn.style.bottom = "auto";
+  }, { passive: true });
+
+  document.addEventListener("touchmove", function (e) {
+    if (!isTouchOnBtn) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startTX, dy = t.clientY - startTY;
+    if (!isDragging && Math.hypot(dx, dy) < THRESHOLD) return;
+    isDragging = true;
+    e.preventDefault();
+    const maxX = window.innerWidth  - btn.offsetWidth;
+    const maxY = window.innerHeight - btn.offsetHeight;
+    btn.style.left = Math.max(0, Math.min(startBX + dx, maxX)) + "px";
+    btn.style.top  = Math.max(0, Math.min(startBY + dy, maxY)) + "px";
+  }, { passive: false });
+
+  document.addEventListener("touchend", function () {
+    isTouchOnBtn = false;
+    setTimeout(() => { isDragging = false; }, 120);
+  });
+
+  btn.addEventListener("click", function (e) {
+    if (isDragging) return;
+    e.preventDefault();
+    if (window.history.length > 1) {
+      history.back();
+    } else {
+      const parts = window.location.pathname.split("/");
+      parts.pop();
+      window.location.href = (parts.join("/") || "/") + "/index.html";
+    }
+  });
+})();
+</script>
+</body>
+</html>
